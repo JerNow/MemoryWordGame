@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MemoryWordGame
@@ -12,9 +13,10 @@ namespace MemoryWordGame
             Console.WriteLine("Memory Word Game\n");
             Console.WriteLine("Please choose your difficulty level:");
             Console.Write("(Easy/Hard) ");
-
             string _difficulty = ReadUserInput.DifficultyLevelInput();
             Console.WriteLine($"You have selected {_difficulty} level");
+            MemoryGameLogic.Game(4, 10, _wordsTable, _difficulty);
+            //MemoryGameLogic.View(10, _difficulty);
         }
 
         public static string[] ReadFromTextFile(string path)
