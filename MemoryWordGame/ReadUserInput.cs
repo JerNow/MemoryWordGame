@@ -17,7 +17,6 @@ namespace MemoryWordGame
             if (_userInput != "Easy" && _userInput != "Hard")
             {
                 Console.WriteLine("Wrong input! Please write either Easy, or Hard!");
-                DifficultyLevelInput();
             }
             return _userInput;
         }
@@ -29,7 +28,6 @@ namespace MemoryWordGame
             if (_userInput != "Yes" && _userInput != "No")
             {
                 Console.WriteLine("Wrong input, please write either Yes, or No");
-                ConfirmationInput();
             }
             return _userInput;
         }
@@ -42,7 +40,6 @@ namespace MemoryWordGame
             if (!rgx.IsMatch(_userInput))
             {
                 Console.WriteLine("Wrong input! Please write Coordinates! (ex. A1, B3)");
-                CoordinatesEasyDifficultyInput();
             }
             return _userInput;
         }
@@ -55,7 +52,6 @@ namespace MemoryWordGame
             if (!rgx.IsMatch(_userInput))
             {
                 Console.WriteLine("Wrong input! Please write Coordinates! (ex. A1, B3)");
-                CoordinatesHardDifficultyInput();
             }
             return _userInput;
         }

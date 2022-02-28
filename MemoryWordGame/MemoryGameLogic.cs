@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace MemoryWordGame
 {
     public class MemoryGameLogic
     {
         static Random rnd = new Random();
+        static Regex rgx;
 
         public static string[,] CreatingWordsArray(int numberOfWords, string[] wordsTable)
         {
@@ -39,133 +41,176 @@ namespace MemoryWordGame
             return wordsArray;
         }
 
-        public static void GameEasy(int chances, string[,] wordsArray, string[,] viewArray, int pairsRevelead)
+        public static void GameEasy(int chances, string[,] wordsArray, string[,] viewArray, int pairsRevelead, bool flag)
         {
-            ViewEasy(chances, wordsArray, viewArray);
-            
+            ViewEasy(chances, viewArray);
             if (chances < 0) //lose condition
             {
+                flag = false;
                 Console.Clear();
                 Console.WriteLine("You Lost!\n");
-                return;
             }
 
             if (pairsRevelead == 4) //win condition
             {
+                flag = false;
                 Console.Clear();
                 Console.WriteLine("You Won!\n");
+            }
+
+            if (flag)
+            {
+                rgx = new Regex(@"^[A-B][1-4]$");
+                string coordinatesFirstGuess;
+                do
+                {
+                    coordinatesFirstGuess = ReadUserInput.CoordinatesEasyDifficultyInput(); //user input first guess
+                }
+                while (!rgx.IsMatch(coordinatesFirstGuess));
+
+
+                int[] arrayCoordinatesFirstGuess = CoordinatesConverterEasy(coordinatesFirstGuess);
+
+                if (WordAlreadyRevealedCheck(arrayCoordinatesFirstGuess, viewArray)) //word already revealed
+                {
+                    chances--;
+                    GameEasy(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                ViewArrayShowWord(arrayCoordinatesFirstGuess, wordsArray, viewArray); //word not revealed yet, continue
+
+                ViewEasy(chances, viewArray);
+
+                string coordinatesSecondGuess;
+                do
+                {
+                    coordinatesSecondGuess = ReadUserInput.CoordinatesEasyDifficultyInput();  //user input second guess
+                }
+                while (!rgx.IsMatch(coordinatesSecondGuess));
+
+
+                if (coordinatesFirstGuess == coordinatesSecondGuess) //player put the same coordinates on second guess
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
+                    chances--;
+                    GameEasy(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                int[] arrayCoordinatesSecondGuess = CoordinatesConverterEasy(coordinatesSecondGuess);
+
+                if (WordAlreadyRevealedCheck(arrayCoordinatesSecondGuess, viewArray)) //second word already revealed
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
+                    chances--;
+                    GameEasy(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                ViewArrayShowWord(arrayCoordinatesSecondGuess, wordsArray, viewArray);
+
+                ViewEasy(chances, viewArray);
+
+                if (!WordsMatchCheck(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, wordsArray)) //words dont match
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, viewArray);
+                    chances--;
+                    GameEasy(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+                else //player succesfully guessed a pair of words
+                {
+                    pairsRevelead++;
+                    GameEasy(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+            }
+            else
+            {
                 return;
-            }
-
-            string coordinatesFirstGuess = ReadUserInput.CoordinatesEasyDifficultyInput(); //user input first guess
-            int[] arrayCoordinatesFirstGuess = CoordinatesConverterEasy(coordinatesFirstGuess);
-
-            if (WordAlreadyRevealedCheck(arrayCoordinatesFirstGuess, viewArray)) //word already revealed
-            {
-                chances--;
-                GameEasy(chances, wordsArray, viewArray, pairsRevelead);
-            }
-
-            ViewArrayShowWord(arrayCoordinatesFirstGuess, wordsArray, viewArray); //word not revealed yet, continue
-
-            ViewEasy(chances, wordsArray, viewArray);
-
-            string coordinatesSecondGuess = ReadUserInput.CoordinatesEasyDifficultyInput();
-            if (coordinatesFirstGuess == coordinatesSecondGuess) //player put the same coordinates on second guess
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
-                chances--;
-                GameEasy(chances, wordsArray, viewArray, pairsRevelead);
-            }
-            
-            int[] arrayCoordinatesSecondGuess = CoordinatesConverterEasy(coordinatesSecondGuess);
-
-            if (WordAlreadyRevealedCheck(arrayCoordinatesSecondGuess, viewArray)) //second word already revealed
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
-                chances--;
-                GameEasy(chances, wordsArray, viewArray, pairsRevelead);
-            }
-
-            ViewArrayShowWord(arrayCoordinatesSecondGuess, wordsArray, viewArray);
-
-            ViewEasy(chances, wordsArray, viewArray);
-
-            if (!WordsMatchCheck(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, wordsArray)) //words dont match
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, viewArray);
-                chances--;
-                GameEasy(chances, wordsArray, viewArray, pairsRevelead);
-            }
-            else //player succesfully guessed a pair of words
-            {
-                pairsRevelead++;
-                GameEasy(chances, wordsArray, viewArray, pairsRevelead);
             }
         }
 
-        public static void GameHard(int chances, string[,] wordsArray, string[,] viewArray, int pairsRevelead)
+        public static void GameHard(int chances, string[,] wordsArray, string[,] viewArray, int pairsRevelead, bool flag)
         {
-            ViewHard(chances, wordsArray, viewArray);
+            ViewHard(chances, viewArray);
 
             if (chances < 0) //lose condition
             {
+                flag = false;
                 Console.Clear();
                 Console.WriteLine("You Lost!\n");
-                return;
             }
 
             if (pairsRevelead == 8) //win condition
             {
+                flag = false;
                 Console.Clear();
                 Console.WriteLine("You Won!\n");
+            }
+
+            if (flag)
+            {
+                rgx = new Regex(@"^[A-D][1-4]$");
+                string coordinatesFirstGuess;
+                do
+                {
+                    coordinatesFirstGuess = ReadUserInput.CoordinatesHardDifficultyInput(); //user input first guess
+                }
+                while (!rgx.IsMatch(coordinatesFirstGuess));
+
+                int[] arrayCoordinatesFirstGuess = CoordinatesConverterHard(coordinatesFirstGuess);
+
+                if (WordAlreadyRevealedCheck(arrayCoordinatesFirstGuess, viewArray)) //word already revealed
+                {
+                    chances--;
+                    GameHard(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                ViewArrayShowWord(arrayCoordinatesFirstGuess, wordsArray, viewArray); //word not revealed yet, continue
+
+                ViewHard(chances, viewArray);
+
+                string coordinatesSecondGuess;
+                do
+                {
+                    coordinatesSecondGuess = ReadUserInput.CoordinatesHardDifficultyInput(); //user input second guess
+                }
+                while (!rgx.IsMatch(coordinatesSecondGuess));
+
+                if (coordinatesFirstGuess == coordinatesSecondGuess) //player put the same coordinates on second guess
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
+                    chances--;
+                    GameHard(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                int[] arrayCoordinatesSecondGuess = CoordinatesConverterHard(coordinatesSecondGuess);
+
+                if (WordAlreadyRevealedCheck(arrayCoordinatesSecondGuess, viewArray)) //second word already revealed
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
+                    chances--;
+                    GameHard(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+                ViewArrayShowWord(arrayCoordinatesSecondGuess, wordsArray, viewArray);
+
+                ViewHard(chances, viewArray);
+
+                if (!WordsMatchCheck(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, wordsArray)) //words dont match
+                {
+                    HideArrayWords(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, viewArray);
+                    chances--;
+                    GameHard(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+                else //player succesfully guessed a pair of words
+                {
+                    pairsRevelead++;
+                    GameHard(chances, wordsArray, viewArray, pairsRevelead, flag);
+                }
+
+            }
+            else
+            {
                 return;
-            }
-
-            string coordinatesFirstGuess = ReadUserInput.CoordinatesHardDifficultyInput(); //user input first guess
-            int[] arrayCoordinatesFirstGuess = CoordinatesConverterHard(coordinatesFirstGuess);
-
-            if (WordAlreadyRevealedCheck(arrayCoordinatesFirstGuess, viewArray)) //word already revealed
-            {
-                chances--;
-                GameHard(chances, wordsArray, viewArray, pairsRevelead);
-            }
-
-            ViewArrayShowWord(arrayCoordinatesFirstGuess, wordsArray, viewArray); //word not revealed yet, continue
-
-            ViewHard(chances, wordsArray, viewArray);
-
-            string coordinatesSecondGuess = ReadUserInput.CoordinatesHardDifficultyInput();
-            if (coordinatesFirstGuess == coordinatesSecondGuess) //player put the same coordinates on second guess
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
-                chances--;
-                GameHard(chances, wordsArray, viewArray, pairsRevelead);
-            }
-
-            int[] arrayCoordinatesSecondGuess = CoordinatesConverterHard(coordinatesSecondGuess);
-
-            if (WordAlreadyRevealedCheck(arrayCoordinatesSecondGuess, viewArray)) //second word already revealed
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, viewArray);
-                chances--;
-                GameHard(chances, wordsArray, viewArray, pairsRevelead);
-            }
-
-            ViewArrayShowWord(arrayCoordinatesSecondGuess, wordsArray, viewArray);
-
-            ViewHard(chances, wordsArray, viewArray);
-
-            if (!WordsMatchCheck(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, wordsArray)) //words dont match
-            {
-                HideArrayWords(arrayCoordinatesFirstGuess, arrayCoordinatesSecondGuess, viewArray);
-                chances--;
-                GameHard(chances, wordsArray, viewArray, pairsRevelead);
-            }
-            else //player succesfully guessed a pair of words
-            {
-                pairsRevelead++;
-                GameHard(chances, wordsArray, viewArray, pairsRevelead);
             }
         }
 
@@ -190,7 +235,7 @@ namespace MemoryWordGame
             return result;
         }
 
-        public static void ViewEasy(int chancesLeft, string[,] wordsArray, string[,] viewArray)
+        public static void ViewEasy(int chancesLeft, string[,] viewArray)
         {
             Console.Clear();
             Console.WriteLine("----------------------------------------------------------------");
@@ -202,7 +247,7 @@ namespace MemoryWordGame
             Console.WriteLine("----------------------------------------------------------------");
         }
 
-        public static void ViewHard(int chancesLeft, string[,] wordsArray, string[,] viewArray)
+        public static void ViewHard(int chancesLeft, string[,] viewArray)
         {
             Console.Clear();
             Console.WriteLine("----------------------------------------------------------------");
@@ -239,7 +284,7 @@ namespace MemoryWordGame
             return false;
         }
 
-        public static bool WordAlreadyRevealedCheck (int[] arrayCoordinates, String[,] viewArray)
+        public static bool WordAlreadyRevealedCheck(int[] arrayCoordinates, String[,] viewArray)
         {
             if (viewArray[arrayCoordinates[0], arrayCoordinates[1]] == "X")
                 return false;
