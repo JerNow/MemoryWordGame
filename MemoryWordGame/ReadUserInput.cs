@@ -5,6 +5,7 @@ namespace MemoryWordGame
 {
     public class ReadUserInput
     {
+        static Regex rgx;
         public static string GetInput()
         {
             return Console.ReadLine();
@@ -21,11 +22,23 @@ namespace MemoryWordGame
             return _userInput;
         }
 
+        public static string ConfirmationInput()
+        {
+            string _userInput = GetInput();
+            if (_userInput == null) throw new ArgumentNullException();
+            if (_userInput != "Yes" && _userInput != "No")
+            {
+                Console.WriteLine("Wrong input, please write either Yes, or No");
+                ConfirmationInput();
+            }
+            return _userInput;
+        }
+
         public static string CoordinatesEasyDifficultyInput()
         {
             string _userInput = GetInput();
             if (_userInput == null) throw new ArgumentNullException();
-            Regex rgx = new Regex(@"^[A-B][1-4]$");
+            rgx = new Regex(@"^[A-B][1-4]$");
             if (!rgx.IsMatch(_userInput))
             {
                 Console.WriteLine("Wrong input! Please write Coordinates! (ex. A1, B3)");
@@ -38,7 +51,7 @@ namespace MemoryWordGame
         {
             string _userInput = GetInput();
             if (_userInput == null) throw new ArgumentNullException();
-            Regex rgx = new Regex(@"^[A-D][1-4]$");
+            rgx = new Regex(@"^[A-D][1-4]$");
             if (!rgx.IsMatch(_userInput))
             {
                 Console.WriteLine("Wrong input! Please write Coordinates! (ex. A1, B3)");
