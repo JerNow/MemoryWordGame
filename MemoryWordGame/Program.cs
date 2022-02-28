@@ -27,7 +27,6 @@ namespace MemoryWordGame
    
             string[,] _wordsArray;
             string[,] _viewArray;
-            bool flag;
 
             switch (_difficulty)
             {
@@ -36,16 +35,14 @@ namespace MemoryWordGame
                     _viewArray = new string[4, 2];
                     for (int i = 0; i < _viewArray.Length; i++)
                         _viewArray[i / 2, i % 2] = "X";
-                    flag = true;
-                    MemoryGameLogic.GameEasy(10, _wordsArray, _viewArray, 0, flag);
+                    GameEasyLevel.GameEasy(10, _wordsArray, _viewArray, 0);
                     break;
                 case "Hard":
                     _wordsArray = MemoryGameLogic.CreatingWordsArray(8, wordsTable);
                     _viewArray = new string[8, 2];
                     for (int i = 0; i < _viewArray.Length; i++)
                         _viewArray[i / 2, i % 2] = "X";
-                    flag = true;
-                    MemoryGameLogic.GameHard(15, _wordsArray, _viewArray, 0, flag);
+                    GameHardLevel.GameHard(15, _wordsArray, _viewArray, 0);
                     break;
             }
 
